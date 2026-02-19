@@ -3429,15 +3429,7 @@ async def back_from_submenu(message: types.Message):
     admin_flag = await is_admin(message.from_user.id)
     await message.answer("Главное меню:", reply_markup=user_main_keyboard(admin_flag))
 
-# ===== ОБРАБОТКА НЕИЗВЕСТНЫХ СООБЩЕНИЙ =====
-@dp.message_handler()
-async def unknown_message(message: types.Message):
-    if message.chat.type != 'private':
-        return
-    if await is_banned(message.from_user.id) and not await is_admin(message.from_user.id):
-        return
-    admin_flag = await is_admin(message.from_user.id)
-    await message.answer("Я не понимаю эту команду. Используй кнопки меню.", reply_markup=user_main_keyboard(admin_flag))
+
 
 # ===== КОНЕЦ ВТОРОЙ ЧАСТИ =====
 # ===== ТРЕТЬЯ ЧАСТЬ (АДМИНИСТРАТИВНЫЕ ХЕНДЛЕРЫ, ФОНОВЫЕ ЗАДАЧИ, ЗАПУСК) =====
@@ -5423,7 +5415,15 @@ async def check_subscription(user_id: int):
         except Exception:
             not_subscribed.append((title, link))
     return len(not_subscribed) == 0, not_subscribed
-
+# ===== ОБРАБОТКА НЕИЗВЕСТНЫХ СООБЩЕНИЙ =====
+@dp.message_handler()
+async def unknown_message(message: types.Message):
+    if message.chat.type != 'private':
+        return
+    if await is_banned(message.from_user.id) and not await is_admin(message.from_user.id):
+        return
+    admin_flag = await is_admin(message.from_user.id)
+    await message.answer("Я не понимаю эту команду. Используй кнопки меню.", reply_markup=user_main_keyboard(admin_flag))
 if __name__ == "__main__":
     while True:
         try:
