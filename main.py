@@ -5409,6 +5409,21 @@ async def on_shutdown(dp):
     await bot.close()
     logging.info("Бот остановлен")
 
+# ===== ФУНКЦИЯ ПРОВЕРКИ ПОДПИСКИ =====
+async def check_subscription(user_id: int):
+    channels = await get_channels()
+    if not channels:
+        return True, []
+    not_subscribed = []
+    for chat_id, title, link in channels:
+        try:
+            member = await bot.get_chat_member(chat_id=chat_id, user_id=user_id)
+            if member.status in ['left', 'kicked']:
+                not_subscribed.append((title, link))
+        except Exception:
+            not_subscribed.append((title, link))
+    return len(not_subscribed) == 0, not_subscribed
+
 if __name__ == "__main__":
     while True:
         try:
